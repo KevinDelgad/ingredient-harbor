@@ -1,0 +1,1 @@
+A Backend Flask App used to store information, perform webscraping and headless browsing, and serve webpages.
