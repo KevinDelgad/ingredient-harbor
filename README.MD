@@ -1,0 +1,1 @@
+A Website meant to retrieve the ingredient list from inputted websites and to display them as a list of ingredients
