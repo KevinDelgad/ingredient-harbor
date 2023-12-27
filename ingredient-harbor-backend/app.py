@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -11,15 +11,17 @@ app = Flask(__name__)
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/test")
+@app.route("/test", methods=['GET', 'POST'])
 def test():
+    site_link = request.args.get('website')
+    
     options = Options()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    driver.get("https://www.foodnetwork.com/recipes/food-network-kitchen/kung-pao-cauliflower-5339620")
+    driver.get(site_link)
     page_source = driver.page_source
     driver.close()
 
@@ -30,7 +32,5 @@ def test():
     for elems in links:
         if(elems.text != 'Deselect All' and elems.text != 'Select All'):
             ingredientList.append(elems.text)
-
-    for elems in ingredientList:
 
     return(ingredientList)
