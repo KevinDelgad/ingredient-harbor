@@ -13,9 +13,19 @@ def staticScrape(site, key, listType):
     page_source_static = BeautifulSoup(bs4Requests.get(site).text, 'lxml')
     found = page_source_static.find_all(listType, key)
     ingredientList = []
-    for ingredient in found :
-        ingredientList.append(ingredient.text)
-    return(ingredientList)
+    dividedIngredientList = []
+    for ingredient in found:
+        if(ingredient.text != 'Deselect All' and ingredient.text != 'Select All'):
+            ingredientList.append(ingredient.text)
+
+    for ingredient in ingredientList:
+        processedIngredient = ingredient.replace('\n', '')
+        ingredientSplit = re.match("^([\d/]+ [a-zA-Z]+) (.+)$", processedIngredient)
+        if(ingredientSplit):
+            dividedIngredientList.append([ingredientSplit.group(1), ingredientSplit.group(2)])
+        else:
+            dividedIngredientList.append(processedIngredient)
+    return(dividedIngredientList)
 
 def getSiteName(site):
     regexPattern = re.search('[.][a-zA-z]+[.]', site)
@@ -48,6 +58,7 @@ def hello_world():
 
 @app.route("/scrapeIngredients", methods=['GET', 'POST'])
 def test():
+    site_name = getSiteName(request.args.get('website'))
     site_link = request.args.get('website')
     
     options = Options()
@@ -69,11 +80,12 @@ def test():
             ingredientList.append(ingredient.text)
 
     for ingredient in ingredientList:
-        ingredientSplit = re.match("^([\d/]+ [a-zA-Z]+) (.+)$", ingredient)
+        processedIngredient = ingredient.replace('\n', '')
+        ingredientSplit = re.match("^([\d/]+ [a-zA-Z]+) (.+)$", processedIngredient)
         if(ingredientSplit):
             dividedIngredientList.append([ingredientSplit.group(1), ingredientSplit.group(2)])
         else:
-            dividedIngredientList.append(ingredient)
+            dividedIngredientList.append(processedIngredient)
     
 
 
