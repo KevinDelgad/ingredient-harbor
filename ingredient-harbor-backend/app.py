@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
+import json
 import re
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -58,35 +59,16 @@ def hello_world():
 
 @app.route("/scrapeIngredients", methods=['GET', 'POST'])
 def test():
+    formatfile = open('format.json')
+    formatData = json.load(formatfile)
+    formatfile.close()
     site_name = getSiteName(request.args.get('website'))
     site_link = request.args.get('website')
-    
-    options = Options()
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    key = formatData['singleKey'][site_name]["ingredientListKey"]
+    listType = formatData['singleKey'][site_name]["ingredientListType"]
+    if(checkStatic(site_link, key)):
+        return(staticScrape(site_link, key, listType))
 
-    driver.get(site_link)
-    page_source = driver.page_source
-    driver.close()
-
-    soup = BeautifulSoup(page_source, 'lxml')
-    ingredients = soup.find_all('span', {'class': 'o-Ingredients__a-Ingredient--CheckboxLabel'})
-    ingredientList = []
-    dividedIngredientList = []
-    for ingredient in ingredients:
-        if(ingredient.text != 'Deselect All' and ingredient.text != 'Select All'):
-            ingredientList.append(ingredient.text)
-
-    for ingredient in ingredientList:
-        processedIngredient = ingredient.replace('\n', '')
-        ingredientSplit = re.match("^([\d/]+ [a-zA-Z]+) (.+)$", processedIngredient)
-        if(ingredientSplit):
-            dividedIngredientList.append([ingredientSplit.group(1), ingredientSplit.group(2)])
-        else:
-            dividedIngredientList.append(processedIngredient)
     
 
-
-    return(dividedIngredientList)
+    
