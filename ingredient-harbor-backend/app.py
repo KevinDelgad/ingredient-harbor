@@ -1,17 +1,41 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
+import re
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
+import requests as bs4Requests
 
 app = Flask(__name__)
+
+def staticScrape(site, key, listType):
+    page_source_static = BeautifulSoup(bs4Requests.get(site).text, 'lxml')
+    found = page_source_static.find_all(listType, key)
+    ingredientList = []
+    for ingredient in found :
+        ingredientList.append(ingredient.text)
+    return(ingredientList)
+
+def checkValidMeasurements(inputtedList):
+    valid_measurements = [
+        "teaspoon",
+        "tablespoon",
+        "cup",
+        "pint",
+        "quart",
+        "gallon"
+    ]
+    
+    if(inputtedList.split()[1] in valid_measurements):
+        return True
+    return False
 
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/test", methods=['GET', 'POST'])
+@app.route("/scrapIngredients", methods=['GET', 'POST'])
 def test():
     site_link = request.args.get('website')
     
@@ -26,11 +50,20 @@ def test():
     driver.close()
 
     soup = BeautifulSoup(page_source, 'lxml')
-    links = soup.find_all('span', {'class': 'o-Ingredients__a-Ingredient--CheckboxLabel'})
+    ingredients = soup.find_all('span', {'class': 'o-Ingredients__a-Ingredient--CheckboxLabel'})
     ingredientList = []
     dividedIngredientList = []
-    for elems in links:
-        if(elems.text != 'Deselect All' and elems.text != 'Select All'):
-            ingredientList.append(elems.text)
+    for ingredient in ingredients:
+        if(ingredient.text != 'Deselect All' and ingredient.text != 'Select All'):
+            ingredientList.append(ingredient.text)
 
-    return(ingredientList)
+    for ingredient in ingredientList:
+        ingredientSplit = re.match("^([\d/]+ [a-zA-Z]+) (.+)$", ingredient)
+        if(ingredientSplit):
+            dividedIngredientList.append([ingredientSplit.group(1), ingredientSplit.group(2)])
+        else:
+            dividedIngredientList.append(ingredient)
+    
+
+
+    return(dividedIngredientList)
