@@ -1,0 +1,42 @@
+{
+    "singleKey":{
+        "foodnetwork":{
+            "ingredientListKey" : "o-Ingredients__a-Ingredient--CheckboxLabel",
+            "ingredientListType" : "span",
+            "siteType" : "static"
+        },
+        "delish":{
+            "ingredientListKey" : "css-1sz7tc7 eno1xhi2",
+            "ingredientListType" : "li",
+            "siteType" : "dynamic"
+        },
+        "bbcgoodfood" : {
+            "ingredientListKey" : "pb-xxs pt-xxs list-item list-item--separator",
+            "ingredientListType" : "li",
+            "siteType" : "static"
+        },
+        "aheadofthyme" : {
+            "ingredientListKey" : "data-tr-ingredient-checkbox",
+            "ingredientListType" : "li",
+            "siteType" : "dynamic"
+        },
+        "allrecipes" : {
+            "ingredientListKey" : "mntl-structured-ingredients__list-item",
+            "ingredientListType" : "li",
+            "siteType" : "static"
+        }        
+    },
+    "groupedWprm":{
+        "supportedSites" : ["budgetbyte", "loveandlemons"],
+        "ingredientListKey": "wprm-recipe-ingredient",
+        "ingredientListType": "li",
+        "siteType" : "dynamic"           
+    },
+    "groupedIngredient":{
+        "supportedSites" : ["onceuponachef", "sallysbakingaddiction"],
+        "ingredientListKey" : "ingredient",
+        "ingredientListType" : "li",
+        "siteType" : "dynamic"
+        
+    }
+}
