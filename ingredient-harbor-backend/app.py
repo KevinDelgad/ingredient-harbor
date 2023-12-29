@@ -17,6 +17,10 @@ def staticScrape(site, key, listType):
         ingredientList.append(ingredient.text)
     return(ingredientList)
 
+def getSiteName(site):
+    regexPattern = re.search('[.][a-zA-z]+[.]', site)
+    return regexPattern.group(0).strip(".")
+
 def checkStatic(site, key):
     page_source_static = BeautifulSoup(bs4Requests.get(site).text, 'lxml')
     found = page_source_static.find_all("li", key)
@@ -42,7 +46,7 @@ def checkValidMeasurements(inputtedList):
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/scrapIngredients", methods=['GET', 'POST'])
+@app.route("/scrapeIngredients", methods=['GET', 'POST'])
 def test():
     site_link = request.args.get('website')
     
