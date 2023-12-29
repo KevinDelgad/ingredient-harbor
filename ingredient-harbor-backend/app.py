@@ -17,6 +17,13 @@ def staticScrape(site, key, listType):
         ingredientList.append(ingredient.text)
     return(ingredientList)
 
+def checkStatic(site, key):
+    page_source_static = BeautifulSoup(bs4Requests.get(site).text, 'lxml')
+    found = page_source_static.find_all("li", key)
+    if(found):
+        return True
+    return False
+
 def checkValidMeasurements(inputtedList):
     valid_measurements = [
         "teaspoon",
